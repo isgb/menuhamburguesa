@@ -1,11 +1,10 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
-/**
- * Metro configuration
- * https://reactnative.dev/docs/metro
- *
- * @type {import('@react-native/metro-config').MetroConfig}
- */
-const config = {};
+const config = {
+  resolver: {
+    assetExts: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'],
+    sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'node'],
+  },
+};
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);
