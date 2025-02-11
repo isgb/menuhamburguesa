@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 
@@ -9,8 +9,14 @@ const HamburgerMenu = () => {
   const translateX = useSharedValue(width);
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-    translateX.value = withTiming(menuOpen ? width : width * 0.2, { duration: 300 });
+    if (menuOpen) {
+      translateX.value = withTiming(width, { duration: 300 }, () => {
+        runOnJS(setMenuOpen)(false);
+      });
+    } else {
+      runOnJS(setMenuOpen)(true);
+      translateX.value = withTiming(width * 0.2, { duration: 300 });
+    }
   };
 
   const animatedStyles = useAnimatedStyle(() => {
@@ -27,7 +33,6 @@ const HamburgerMenu = () => {
       {menuOpen && (
         <View style={styles.overlay}>
           <Animated.View style={[styles.menu, animatedStyles]}>
-            
             <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Cerrar</Text>
             </TouchableOpacity>
@@ -67,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   closeButton: {
-    position: 'relative',
+    position: 'absolute',
     top: 10,
     right: 10,
     padding: 10,
